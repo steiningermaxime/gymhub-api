@@ -1,11 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const userRoutes = require('./routes/UsersRoute');
 const exerciseRoutes = require('./routes/ExercicesRoute');
 const sqlite3 = require('sqlite3').verbose();
 const dbPath = './database.db';
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 const db = new sqlite3.Database(dbPath, (err) => {
@@ -19,7 +21,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
 const initDb = () => {
   db.run(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
             email TEXT,
             password TEXT
           )`);
@@ -34,9 +35,10 @@ const initDb = () => {
 };
 
 initDb();
+
+// Définir les routes
 app.use('/users', userRoutes);
 app.use('/exercises', exerciseRoutes);
-app.use('/users/login', userRoutes,);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
