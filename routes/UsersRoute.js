@@ -8,6 +8,4 @@ const userController = new UserController(UserService);
 router.post('/', userController.createUser.bind(userController));
 router.get('/', userController.getUsers.bind(userController));
 router.post('/login', userController.login.bind(userController));
-
-
 module.exports = router;
