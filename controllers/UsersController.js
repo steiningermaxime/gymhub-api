@@ -1,9 +1,12 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 class UserController {
   constructor(userService) {
     this.userService = userService;
+    this.createUser = this.createUser.bind(this);
+    this.getUsers = this.getUsers.bind(this);
+    this.login = this.login.bind(this);
   }
 
   async createUser(req, res) {
@@ -23,31 +26,31 @@ class UserController {
       res.status(500).json({ message: error.message });
     }
   }
+
   async login(req, res) {
     try {
-      const { username, password } = req.body;
+      const { email, password } = req.body;
+      const user = await this.userService.getUserByEmail(email);
 
-      // Trouvez l'utilisateur dans la base de données en utilisant le nom d'utilisateur
-      const user = await this.userService.getUserByUsername(username);
-
-      // Si aucun utilisateur n'est trouvé, renvoyez une erreur
       if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      // Vérifiez le mot de passe en utilisant bcrypt
       const isMatch = await bcrypt.compare(password, user.password);
 
-      // Si le mot de passe ne correspond pas, renvoyez une erreur
       if (!isMatch) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      // Si la connexion réussit, renvoyez l'utilisateur
-      res.status(200).json(user);
+      const token = jwt.sign({ id: user.id }, 'your_jwt_secret', {
+        expiresIn: '1h',
+      });
+
+      res.status(200).json({ token, user });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   }
-  }
+}
+
 module.exports = UserController;

@@ -1,6 +1,6 @@
-const sqlite3 = require("sqlite3").verbose();
-const dbPath = "./database.db";
-const bcrypt = require("bcrypt");
+const sqlite3 = require('sqlite3').verbose();
+const dbPath = './database.db';
+const bcrypt = require('bcrypt');
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
@@ -13,21 +13,24 @@ class UserService {
 
   async createUser(user) {
     try {
-      // Hacher le mot de passe
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(user.password, saltRounds);
-
-      // Remplacer le mot de passe en texte clair par le mot de passe haché
       user.password = hashedPassword;
 
-      // Insérer l'utilisateur dans la base de données
-      const result = await db.run(
-        "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-        [user.username, user.email, user.password]
-      );
+      const result = await new Promise((resolve, reject) => {
+        db.run(
+          'INSERT INTO users (email, password) VALUES (?, ?)',
+          [user.email, user.password],
+          function (err) {
+            if (err) {
+              return reject(err);
+            }
+            resolve(this.lastID);
+          }
+        );
+      });
 
-      // Renvoie l'ID de l'utilisateur inséré
-      return { id: result.lastID };
+      return { id: result };
     } catch (error) {
       throw error;
     }
@@ -35,7 +38,7 @@ class UserService {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      db.all("SELECT * FROM users", [], (err, rows) => {
+      db.all('SELECT * FROM users', [], (err, rows) => {
         if (err) {
           return reject(err);
         }
@@ -44,11 +47,11 @@ class UserService {
     });
   }
 
-  getUserByUsername(username) {
+  getUserByEmail(email) {
     return new Promise((resolve, reject) => {
       db.get(
-        "SELECT * FROM users WHERE username = ?",
-        [username],
+        'SELECT * FROM users WHERE email = ?',
+        [email],
         (err, row) => {
           if (err) {
             return reject(err);
@@ -59,4 +62,5 @@ class UserService {
     });
   }
 }
-module.exports = new UserService();
+
+module.exports = UserService;
