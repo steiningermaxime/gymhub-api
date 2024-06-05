@@ -1,6 +1,11 @@
+const bcrypt = require('bcrypt');
 const ExerciseService = require('../services/ExercicesService');
 
 class ExerciseController {
+  constructor() {
+    this.exerciseService = new ExerciseService();
+  }
+
   async createExercise(req, res) {
     try {
       const exercise = await this.exerciseService.createExercise(req.body);
@@ -18,8 +23,6 @@ class ExerciseController {
       res.status(500).json({ message: error.message });
     }
   }
-
-  // Ajoutez d'autres méthodes de contrôleur si nécessaire
 }
 
 module.exports = ExerciseController;

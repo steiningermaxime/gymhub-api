@@ -30,7 +30,7 @@ class ExerciseService {
     });
   }
   
-
+  
   getExercises() {
     return new Promise((resolve, reject) => {
       db.all('SELECT * FROM exercises', [], (err, rows) => {
@@ -45,4 +45,4 @@ class ExerciseService {
   // Ajoutez d'autres méthodes de service si nécessaire
 }
 
-module.exports = new ExerciseService();
+module.exports = ExerciseService;
