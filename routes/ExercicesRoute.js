@@ -6,5 +6,6 @@ const exerciseController = new ExerciseController();
 
 router.post('/', exerciseController.createExercise.bind(exerciseController));
 router.get('/', exerciseController.getExercises.bind(exerciseController));
+router.get('/:id', exerciseController.getExerciseById.bind(exerciseController));
 
 module.exports = router;

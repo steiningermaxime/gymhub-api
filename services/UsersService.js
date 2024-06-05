@@ -1,6 +1,6 @@
-const sqlite3 = require('sqlite3').verbose();
-const dbPath = './database.db';
-const bcrypt = require('bcrypt');
+const sqlite3 = require("sqlite3").verbose();
+const dbPath = "./database.db";
+const bcrypt = require("bcrypt");
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
@@ -22,7 +22,7 @@ class UserService {
 
       // Insérer l'utilisateur dans la base de données
       const result = await db.run(
-        'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+        "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
         [user.username, user.email, user.password]
       );
 
@@ -35,7 +35,7 @@ class UserService {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM users', [], (err, rows) => {
+      db.all("SELECT * FROM users", [], (err, rows) => {
         if (err) {
           return reject(err);
         }
@@ -46,15 +46,17 @@ class UserService {
 
   getUserByUsername(username) {
     return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
-        if (err) {
-          return reject(err);
+      db.get(
+        "SELECT * FROM users WHERE username = ?",
+        [username],
+        (err, row) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(row);
         }
-        resolve(row);
-      });
+      );
     });
   }
-
 }
-
 module.exports = new UserService();

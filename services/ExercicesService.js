@@ -30,8 +30,7 @@ class ExerciseService {
     });
   }
   
-  
-  getExercises() {
+    getExercises() {
     return new Promise((resolve, reject) => {
       db.all('SELECT * FROM exercises', [], (err, rows) => {
         if (err) {
@@ -42,7 +41,18 @@ class ExerciseService {
     });
   }
 
-  // Ajoutez d'autres méthodes de service si nécessaire
+  getExerciseById(id) {
+    return new Promise((resolve, reject) => {
+      db.get('SELECT * FROM exercises WHERE id = ?', [id], (err, row) => {
+        if (err) {
+          return reject(err);
+        }
+        if (!row) {
+          return reject(new Error(`Exercise with id ${id} not found`));
+        }
+        resolve(row);
+      });
+    });
+  }
 }
-
 module.exports = ExerciseService;
